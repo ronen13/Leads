@@ -4,15 +4,12 @@ services:
     env: node
     region: frankfurt
     plan: free
-    nodeVersion: 22.14.0
-    buildCommand: cd client && npm install && npm run build && cd ../server && npm install
-    startCommand: cd server && node index.js
+    buildCommand: npm install && cd client && npm install && npm run build
+    startCommand: node index.js
     envVars:
       - key: NODE_ENV
         value: production
-      - key: PORT
-        value: 3001
     disk:
       name: grantflow-db
-      mountPath: /opt/render/project/src/server
+      mountPath: /opt/render/project/src
       sizeGB: 1

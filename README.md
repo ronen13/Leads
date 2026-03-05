@@ -1,119 +1,90 @@
 # GrantFlow 🎯
+
 מערכת לאיסוף לידים מרואי חשבון ועורכי דין לצורך קבלת מענקים.
 
 ---
 
-## 🏗 מבנה הפרויקט
+## 🏗 מבנה הפרויקט (שטוח)
 
 ```
 grantflow/
-├── client/          ← React frontend
-│   ├── public/
+├── index.js             ← Express server (כאן, בroot!)
+├── package.json         ← dependencies כולל better-sqlite3
+├── render.yaml
+├── .node-version        ← מכריח Node 22
+├── client/
+│   ├── package.json
+│   ├── public/index.html
 │   └── src/
 │       ├── App.js
 │       ├── api.js
+│       ├── index.js
 │       └── pages/
-│           ├── LeadForm.js         ← טופס לקוח
-│           ├── AdvisorDashboard.js ← דאשבורד יועץ
-│           └── AdminPanel.js       ← פאנל ניהול
-├── server/
-│   ├── index.js     ← Express + SQLite API
-│   └── package.json
-├── render.yaml      ← Render deployment config
-└── package.json     ← Root build scripts
+│           ├── LeadForm.js
+│           ├── AdvisorDashboard.js
+│           └── AdminPanel.js
 ```
 
 ---
 
-## 🌐 ניתוב (URL Routing)
-
-| כתובת | מה מוצג |
-|-------|---------|
-| `/` | פאנל ניהול (Admin) |
-| `/?advisor=CODE` | טופס לקוח – ממולץ ליועץ ספציפי |
-| `/?dashboard=CODE` | דאשבורד יועץ – צפייה בלקוחות שלו |
-
----
-
-## 🚀 פריסה ל-Render (שלב אחר שלב)
+## 🚀 פריסה ל-Render
 
 ### 1. העלה ל-GitHub
 ```bash
-cd grantflow
 git init
 git add .
-git commit -m "Initial commit – GrantFlow"
-git remote add origin https://github.com/YOUR_USERNAME/grantflow.git
+git commit -m "GrantFlow"
+git remote add origin https://github.com/YOUR_USER/grantflow.git
 git push -u origin main
 ```
 
-### 2. צור שירות ב-Render
-1. לך ל-[render.com](https://render.com) → **New → Web Service**
-2. חבר את ה-GitHub repo שלך
-3. הגדרות:
-   - **Name:** `grantflow`
-   - **Environment:** `Node`
-   - **Build Command:**
-     ```
-     cd client && npm install && npm run build && cd ../server && npm install
-     ```
-   - **Start Command:**
-     ```
-     cd server && node index.js
-     ```
-   - **Plan:** Free
+### 2. צור Web Service ב-Render
+- [render.com](https://render.com) → **New → Web Service**
+- חבר את ה-repo
 
-### 3. הוסף Disk (לשמירת DB)
-1. בהגדרות השירות → **Disks** → **Add Disk**
-2. **Name:** `grantflow-db`
-3. **Mount Path:** `/opt/render/project/src/server`
-4. **Size:** 1 GB
+### 3. הגדרות חשובות ב-Render Dashboard
 
-### 4. הגדר Environment Variables
-```
-NODE_ENV = production
-PORT     = 3001
-```
+| שדה | ערך |
+|-----|-----|
+| **Environment** | `Node` |
+| **Build Command** | `npm install && cd client && npm install && npm run build` |
+| **Start Command** | `node index.js` |
 
-### 5. Deploy!
-לחץ **Deploy** וחכה 3-5 דקות.
+### ⚠️ חשוב: הגדר Node 22 ידנית!
+ב-Render Dashboard:
+1. לך ל-**Environment** → **Environment Variables**
+2. הוסף: `NODE_VERSION` = `22.14.0`
+
+(Render מתעלם מ-.node-version לפעמים, אז חובה להוסיף את המשתנה ידנית)
+
+### 4. הוסף Disk (לשמירת SQLite DB)
+- **Disks → Add Disk**
+- **Name:** `grantflow-db`
+- **Mount Path:** `/opt/render/project/src`
+- **Size:** 1 GB
 
 ---
 
-## 📡 API Endpoints
+## 🌐 ניתוב
 
-| Method | Path | תיאור |
-|--------|------|-------|
-| GET | `/api/advisors` | כל היועצים |
-| GET | `/api/advisors/:code` | יועץ לפי קוד |
-| POST | `/api/advisors` | יצירת יועץ חדש |
-| DELETE | `/api/advisors/:code` | מחיקת יועץ |
-| GET | `/api/leads` | כל הלידים |
-| GET | `/api/leads/by-advisor/:code` | לידים של יועץ |
-| POST | `/api/leads` | שמירת ליד חדש |
-| PATCH | `/api/leads/:id/status` | עדכון סטטוס |
-| GET | `/api/grants` | מאגר מענקים |
+| כתובת | תיאור |
+|-------|-------|
+| `/` | פאנל ניהול |
+| `/?advisor=CODE` | טופס לקוח |
+| `/?dashboard=CODE` | דאשבורד יועץ |
 
 ---
 
 ## 💻 פיתוח מקומי
 
 ```bash
-# Terminal 1 – Backend
-cd server
+# התקן dependencies
 npm install
-node index.js    # runs on :3001
+cd client && npm install && cd ..
 
-# Terminal 2 – Frontend
-cd client
-npm install
-npm start        # runs on :3000 (proxies API to :3001)
+# הרץ React dev server (port 3000)
+cd client && npm start
+
+# בטרמינל נפרד – הרץ שרת API (port 3001)
+node index.js
 ```
-
----
-
-## 🔧 טכנולוגיות
-- **Frontend:** React 18
-- **Backend:** Node.js + Express
-- **Database:** SQLite (better-sqlite3)
-- **Hosting:** Render.com
