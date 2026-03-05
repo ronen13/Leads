@@ -4,9 +4,8 @@ services:
     env: node
     region: frankfurt
     plan: free
-    buildCommand: |
-      cd client && npm install && npm run build
-      cd ../server && npm install
+    nodeVersion: 22.14.0
+    buildCommand: cd client && npm install && npm run build && cd ../server && npm install
     startCommand: cd server && node index.js
     envVars:
       - key: NODE_ENV
